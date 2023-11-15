@@ -1,1 +1,1 @@
-# Construction_of_the_reachability_set_of_a_nonlinear_system
+Подробное описание постановки задачи, а также её решения можно найти в Отчёт.pdf
