@@ -35,7 +35,8 @@ clear, clc;
 [t1, t2, N, alpha, filename] = ParamsCin();
 reachsetdyn(alpha, t1, t2, N, filename);
 
-%%
+%% 
+% Functions
 function [T, alpha] = ParamsInput()
 
     T = input('Введите момент времени T, в который необходимо построить мн-во дост-ти\n');
