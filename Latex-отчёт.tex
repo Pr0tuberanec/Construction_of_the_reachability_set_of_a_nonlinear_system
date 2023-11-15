@@ -1,0 +1,422 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}	
+\usepackage[T1, T2A]{fontenc}	
+\usepackage{indentfirst}	
+\usepackage[english, russian]{babel}	
+\usepackage{indentfirst}
+\usepackage{a4wide}	
+\usepackage{amsmath}
+\usepackage{amsthm} 
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{arcs}
+\usepackage[top=2cm, bottom=2cm, left=2.5cm, right=1cm]{geometry}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage[unicode, pdftex]{hyperref}
+%\usepackage[unicode, pdftex]{hyperref}	
+\usepackage{setspace}
+%\usepackage{vmargin}
+\sloppy
+\usepackage{indentfirst} % Красная строка
+\uchyph=0 % Запрет переноса слова с прописной буквы
+
+\linespread{1.3}
+\newtheorem{definition}{Определение}
+\newtheorem{thm}{Теорема}
+\newcommand{\hm}[1]{#1\nobreak\discretionary{}{\hbox{\ensuremath{#1}}}{}}
+
+\begin{document}
+\newcommand{\sgn}{\mathrm{sgn}}
+
+\begin{titlepage}
+\begin{center}
+\includegraphics[width=8cm, height=4cm]{msu.eps}
+\end{center}
+
+\begin{center}
+Московский государственный университет имени М.В. Ломоносова\\
+\vspace{0.2cm}
+Факультет вычислительной математики и кибернетики\\
+\vspace{0.2cm}
+Кафедра системного анализа
+
+\vspace{4cm}
+{\LARGE Отчёт по практикуму}\\
+\vspace{1cm}
+{\Huge\bfseries <<Построение множества достижимости нелинейной системы>>}
+\end{center}
+
+\vspace{2cm}
+\begin{flushright}
+\large
+\textit{Студент 315 группы}\\
+Н.~Ю.~Заварзин\\
+\vspace{5mm}
+\textit{Руководитель практикума}\\
+к.ф.-м.н., доцент П.~A.~Точилин\\
+\end{flushright}
+\vspace{4.5cm}
+
+\begin{center}
+Москва, 2023
+\end{center}
+\end{titlepage} 
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\section{Постановка задачи}
+Задано обыкновенное дифференциальное уравнение:
+\begin{equation} \label{eq1}
+	\ddot{x}(t) + x(t)\cos(x^2(t)) + 2x(t)\dot{x}(t) = u(t),
+\end{equation}
+
+где $x(t) \in \mathbb{R}$, а на возможные значения управляющего параметра $u(t)$ наложено ограничение: $u(t) \in [-\alpha, \alpha]$, $\alpha > 0.$ Задан начальный момент времени $t_0 = 0$ и начальная позиция $x(t_0)=0$, $\dot{x}(t_0) = 0$. Необходимо построить множество достижимости $X(t_1, t_0, x(t_0), \dot{x}(t_0))$ (множество пар $(x(t_1), \dot{x}(t_1))$) в классе программных управлений в заданный момент времени $t_1 \geqslant t_0$, а также исследовать его свойства. 
+
+\section{Аналитическое решение задачи}
+Перейдём от дифференциального уравнения второго порядка \eqref{eq1} к системе дифференциальных уравнений первого порядка, для этого сделаем замену $x_1(t) = x(t)$, $x_2(t) = \dot{x}(t)$, тогда
+\begin{equation} \label{eq2}
+	\begin{cases}
+		\dot{x}_1(t) = x_2(t), \\
+		\dot{x}_2(t) = -x_1(t)\cos\left(x_1^2(t)\right) - 2x_1(t)x_2(t) + u(t), \\
+		x_1(t_0) = 0, \\
+		x_2(t_0) = 0.
+	\end{cases}
+\end{equation}
+
+\subsection{Принцип максимума Понтрягина для задачи достижимости}
+Рассмотрим систему в $\mathbb{R}^n$:
+\[ \dot{x} = f(x, u),\]
+где $f(x, u)$, $\frac{\partial f}{\partial x}(x, u)$~--- непрерывные в $\mathbb{R}^{n+m}$ функции. Пусть $\mathcal{P}$~--- множество допустимых управлений на $t \in [0, T]$ и задано $x(t_0) = x_0$. Пусть некоторому допустимому управлению $u^*(t) \in \mathcal{P}$ соответствует траектория $x^*(t)$ с концом $x^*(T)$, принадлежащем границе множества достижимости, а $\mathcal{H}(\psi, x, u)$~--- функция Гамильтона-Понтрягина рассматриваемых дифференциальных уравнений. Тогда на $[0, T]$ существует ненулевое решение $\psi(t)$ сопряжённой системы
+\begin{equation}\label{eq5}
+\dot{\psi}(t) = - \dfrac{\partial{\mathcal{H}(\psi, x^*, u^*)}}{\partial{x}},
+\end{equation}
+такое, что выполняется условие максимума  
+\begin{equation}\label{eq4} 
+\mathcal{H}(\psi, x^*, u^*) = \sup_{u(\cdot) \ \in \ \mathcal{P}}{\mathcal{H}(\psi, x^*, u)}.
+\end{equation} 
+Если $u^*(t)$~--- ограничено, то для $t \in [0, T]$ выполнено:
+\begin{equation}\label{eq7}
+	\sup\limits_{u(\cdot) \ \in \ \mathcal{P}}{\mathcal{H}(\psi, x^*, u)} = \mathrm{const} \geqslant 0.
+\end{equation} 
+
+Для построения множества достижимости достаточно найти концы всех траекторий, удовлетворяющих принципу максимума, а потом удалить из них точки, не принадлежащие границе. 
+Функция Гамильтона-Понтрягина для \eqref{eq2} имеет вид:
+\[ \mathcal{H}(\psi, x, u) = \psi_1x_2 + \psi_2(-x_1\cos\left(x_1^2\right) - 2x_1x_2 + u). \]
+Сопряжённая система к \eqref{eq2} запишется как
+\begin{equation}\label{eq6}
+	\begin{cases}
+		\dot{\psi}_1(t) = 2x_2(t)\psi_2(t) + \cos \left( x_1^2(t) \right)\psi_2(t) - 2 \psi_2(t) x_1^2(t) \sin \left( x_1^2(t) \right), \\
+		\dot{\psi}_2(t) = -\psi_1(t) + 2x_1(t) \psi_2(t). 
+	\end{cases}
+\end{equation}
+
+\subsection{Теорема о чередовании нулей переменных}
+\begin{thm}
+Если $\tau_1 < \tau_2$, $\tau_1$, $\tau_2 \in [t_0, t_1]$, то для систем вида 
+\begin{equation}\label{eq*}	
+\begin{cases}
+	\dot{x}_1(t) = x_2(t), \\
+	\dot{x}_2(t) = -f(x_1(t), x_2(t)) + \sgn  \ \psi_2, \\
+	\dot{\psi}_1(t) = \psi_2(t) \dfrac{\partial f(x_1, x_2)}{\partial x_1}, \\
+	\dot{\psi}_2(t) = -\psi_1(t) + \psi_2(t) \dfrac{\partial f(x_1, x_2)}{\partial x_2}
+\end{cases}
+\end{equation}
+с непрерывно дифференцируемой функцией $f(x_1, x_2)$ справедливы следующие утверждения:
+
+\begin{enumerate}
+	\item 
+\begin{equation}\label{eq8}	
+	\begin{cases}
+		\psi_2(\tau_1) = \psi_2(\tau_2) = 0, \\
+		x_2(\tau_1) = 0
+	\end{cases} \Rightarrow \ \ x_2(\tau_2) = 0.
+\end{equation}
+
+	\item 
+\begin{equation}\label{eq9}	
+	\begin{cases}
+		\psi_2(\tau_1) = \psi_2(\tau_2) = 0, \\
+		x_2(\tau_1) \neq 0
+	\end{cases} \Rightarrow \ \ 
+	\begin{cases}
+		x_2(\tau_2) \neq 0, \\
+		\exists \tau \in (\tau_1, \tau_2): x_2(\tau) = 0.
+	\end{cases} 
+\end{equation}
+
+	\item
+\begin{equation}\label{eq10}	
+	\begin{cases}
+		x_2(\tau_1) = x_2(\tau_2) = 0, \\
+		\psi_2(\tau_1) = 0
+	\end{cases} \Rightarrow \ \ 
+	\psi_2(\tau_2) = 0.
+\end{equation}
+
+	\item
+\begin{equation}\label{eq11}	
+	\begin{cases}
+		x_2(\tau_1) = x_2(\tau_2) = 0, \\
+		\psi_2(\tau_1) \neq 0
+	\end{cases} \Rightarrow \ \ 
+	\begin{cases}
+		\psi_2(\tau_2) \neq 0, \\
+		\exists \tau \in (\tau_1, \tau_2): \psi_2(\tau) = 0.
+	\end{cases} 
+\end{equation}
+\end{enumerate}
+
+\end{thm}
+
+\textbf{Доказательство:} 
+
+1) 
+\[ \psi_2(\tau_1) = 0, \ x_2(\tau_1) = 0 \Rightarrow \] 
+\[ \Rightarrow \mathcal{H}(\tau_1) = \psi_1(\tau_1) x_2(\tau_1) - \psi_2(\tau_1) f(x_1(\tau_1), x_2(\tau_1)) + | \psi_2(\tau_1)| = 0,\]
+поскольку $\mathcal{H} \equiv \texttt{const}, $ то
+\[ \mathcal{H}(\tau_2) = \psi_1(\tau_2) x_2(\tau_2) - \psi_2(\tau_2) f(x_1(\tau_2), x_2(\tau_2)) + | \psi_2(\tau_2)| = 0 \Rightarrow \]
+\[ \Rightarrow \psi_1(\tau_2)x_2(\tau_2) = 0.\]
+Если $\psi_1(\tau_2) = 0$, получаем $\psi(\tau_2) = 0$~--- противоречие с принципом максимума Понтрягина. Тогда $x_2(\tau_2) = 0$. 
+
+2)
+\[ \psi_2(\tau_1) = 0, \ x_2(\tau_1) \neq 0, \ \psi_1(\tau_1) \neq 0 \Rightarrow \] 
+\[ \Rightarrow \mathcal{H}(\tau_1) = \psi_1(\tau_1) x_2(\tau_1) - \psi_2(\tau_1) f(x_1(\tau_1), x_2(\tau_1)) + | \psi_2(\tau_1)| \neq 0,\]
+поскольку $\mathcal{H} \equiv \texttt{const}, $ то
+\[ \mathcal{H}(\tau_2) = \psi_1(\tau_2) x_2(\tau_2) - \psi_2(\tau_2) f(x_1(\tau_2), x_2(\tau_2)) + | \psi_2(\tau_2)| \neq 0 \Rightarrow \]
+\[ \Rightarrow x_2(\tau_2) \neq 0.\]
+Без ограничения общности, положим $\psi_2(t) \neq 0, \ \forall t \in (\tau_1, \tau_2).$ Тогда возможны две ситуации, в каждой из которых $\dot{\psi}_2(\tau_1)\dot{\psi}_2(\tau_2) < 0$
+\begin{figure}[h]
+\begin{minipage}[h]{0.47\linewidth}
+\includegraphics[width=1\linewidth]{First_situation.png}
+\caption{Первая ситуация}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.47\linewidth}
+\includegraphics[width=1\linewidth]{Second.png}
+\caption{Вторая ситуация}
+\end{minipage}
+\end{figure}
+
+\[ \dot{\psi}_2(\tau_1) = -\psi_1(\tau_1) + \psi_2(\tau_1) \dfrac{\partial f}{\partial x_2} < 0 \ \ (> 0), \]
+\[ \dot{\psi}_2(\tau_2) = -\psi_1(\tau_2) + \psi_2(\tau_2) \dfrac{\partial f}{\partial x_2} > 0 \ \ (< 0), \]
+\[ \psi_2(\tau_1) = \psi_2(\tau_2) = 0 \Rightarrow \]
+\[ \dot{\psi}_2(\tau_1)\dot{\psi}_2(\tau_2) = \psi_1(\tau_1) \psi_1(\tau_2) < 0.\]
+Из проведённых ранее рассуждений 
+\[ \psi_1(\tau_1)x_2(\tau_1) = \psi_1(\tau_2)x_2(\tau_2) \Rightarrow x_2(\tau_1)x_2(\tau_2) < 0.\]
+Поскольку $x_2(t)$~--- непрерывная функция, то $\exists \ \tau \in (\tau_1, \tau_2): x_2(\tau) = 0.$
+
+3)
+Рассмотрим функцию:
+\[ z(t) = \psi_1(t)x_2(t) + \psi_2(t) \dfrac{\mathrm{d}x_2(t)}{\mathrm{d}t}. \]
+$z(t)$~--- кусочно-непрерывна. Так как $\dot{x}_2(t) = -f(x_1(t), x_2(t)) + u(t)$, то разрывы могут быть лишь в моменты переключений. Пусть $t_0$~--- точка непрерывности. Тогда при $t \in U_{\delta}(t_0)$:
+\[ \dfrac{\mathrm{d} z(t)}{\mathrm{d} t} = \psi_2(t) \dfrac{\partial f}{\partial x_1}x_2(t) + \psi_1(t) \left(-f(x_1(t), x_2(t)) + u(t) \right) + \left(-\psi_1(t) + \psi_2(t) \dfrac{\partial f}{\partial x_2} \right) \times \]
+\[ \times \left(-f(x_1(t), x_2(t)) + u(t)\right) + \psi_2(t) \left( -\dfrac{\partial f}{\partial x_1}x_2(t) - \dfrac{\partial f}{\partial x_2}(-f(x_1(t), x_2(t)) + u(t)) \right) = 0.\]
+Следовательно $z(t)$~--- кусочно-постоянная. Если же $t_0$~--- момент переключения, то $\psi_2(t_0) = 0$. Но тогда и
+\[ z(t_0 - 0) = z(t_0 + 0) \Rightarrow z(t) \equiv \mathrm{const}. \]
+\[ z(\tau_1) = \psi_1(\tau_1)x_2(\tau_1) + \psi_2(\tau_1)\dot{x}_2(\tau_1) = 0, \]
+\[ z(\tau_2) = z(\tau_1) = \psi_1(\tau_2)x_2(\tau_2) + \psi_2(\tau_2)\dot{x}_2(\tau_2) = 0. \]
+Следовательно $\psi_2(\tau_2) = 0.$  
+
+4) Аналогично п. 3):
+\[ z(\tau_1) = \psi_1(\tau_1)x_2(\tau_1) + \psi_2(\tau_1)\dot{x}_2(\tau_1) \neq 0, \]
+\[ z(\tau_2) = z(\tau_1) = \psi_1(\tau_2)x_2(\tau_2) + \psi_2(\tau_2)\dot{x}_2(\tau_2) \Rightarrow \psi_2(\tau_2) \neq 0. \]
+\[ \dot{x}_2(\tau_1) \dot{x}_2(\tau_2) < 0 \Rightarrow \psi_2(\tau_1)\psi_2(\tau_2) < 0 \Rightarrow \exists \ \tau \in (\tau_1, \tau_2): \psi_2(\tau) = 0.\] 
+\hfill
+$\qed$
+
+\subsection{Решение исходной задачи}
+Оптимальное управление из условия максимума \eqref{eq4} для нашей задачи определяется как 
+\begin{equation}\label{eq12}	
+	u^*(t) = \begin{cases}
+		\alpha \cdot \sgn \ \psi_2, \ \ \ \psi_2(t) \neq 0 \\
+		[-\alpha, \alpha], \ \ \ \psi_2(t) = 0.
+	\end{cases} 
+\end{equation}
+
+При этом в ней невозможен особый режим, так как иначе из формулы для производной $\psi_2(t)$ \eqref{eq*} следует равенство нулю внутри особого режима и $\psi_1(t)$, что противоречит принципу максимума Понтрягина. Значит
+ управление почти всюду равно $\alpha \cdot \sgn \ \psi_2$, что позволяет нам пользоваться доказанной ранее теоремой. Отметим также, что число обнулений $\psi_2(t)$ на отрезке $[0, T]$ конечно, ведь в противном случае существует сходящаяся к некоторому $\tilde{t}$ последовательность времён, в точках которой $\psi_2(t) = 0$, откуда из непрерывности $\psi_2(\tilde{t}) = 0$, отсюда в свою очередь из дифференцируемости $\dot{\psi}_2(\tilde{t}) = 0$, что по \eqref{eq6} приводит к $\psi_1(\tilde{t}) = 0$~--- несоответствие с принципом максимума Понтрягина. 
+
+Воспользуемся этим для построения множества достижимости системы. Введём обозначения
+$$ \begin{cases}
+		\dot{x}_1(t) = x_2(t), \\
+		\dot{x}_2(t) = -x_1(t)\cos\left(x_1^2(t)\right) - 2x_1(t)x_2(t) + \alpha, \\
+		\dot{\psi}_1(t) = 2x_2(t)\psi_2(t) + \cos \left( x_1^2(t) \right)\psi_2(t) - 2 \psi_2(t) x_1^2(t) \sin \left( x_1^2(t) \right), \\
+		\dot{\psi}_2(t) = -\psi_1(t) + 2x_1(t) \psi_2(t). 
+\end{cases} \ \ \ (S_{+})$$
+$$ \begin{cases}
+		\dot{x}_1(t) = x_2(t), \\
+		\dot{x}_2(t) = -x_1(t)\cos\left(x_1^2(t)\right) - 2x_1(t)x_2(t) - \alpha, \\
+		\dot{\psi}_1(t) = 2x_2(t)\psi_2(t) + \cos \left( x_1^2(t) \right)\psi_2(t) - 2 \psi_2(t) x_1^2(t) \sin \left( x_1^2(t) \right), \\
+		\dot{\psi}_2(t) = -\psi_1(t) + 2x_1(t) \psi_2(t). 
+\end{cases} \ \ \ (S_{-})$$
+
+Заметим, что в окрестности $\psi_2(t) = 0$, значение $\dot{\psi}_2(t) \approx -\psi_1(t)$ для обеих систем. То есть при переключении с ($S_{+}$) на $(S_{-})$ необходимо, чтобы $\psi_1(\tau^{\text{пер}}) > 0$, а при переключении с $(S_{-})$ на $(S_{+})$ должно выполняться $\psi_1(\tau^{\text{пер}}) < 0$. При этом нормировка вектора $\psi(t)$ в эти самые моменты переключений не повлияет на переменные координат решения, а также на момент следующего обнуления $\psi_2(t)$. В связи с чем удобно принять $\psi_1(\tau^{\text{пер}}) = \pm 1$ в моменты соответствующих переключений.
+
+\subsection{Особые точки}
+\begin{definition}
+	Точка $(x_1^*, x_2^*)$ называется особой точкой системы \eqref{eq2}, если правая часть системы в этой точке равна 0.
+\end{definition}
+Приравняем к 0 правые части системы \eqref{eq2}. Получим
+$$\begin{cases}
+	x_2 = 0, \\
+	x_1\cos\left(x_1^2\right) + 2x_1x_2 -u = 0.
+\end{cases}$$
+Значит неподвижные точки лежат на прямой $x_2 = 0$, а их координаты $x_1$ численно определяются из уравнения $x_1\cos\left(x_1^2\right) = u$.
+
+\section{Приближенное решение задачи}
+\subsection{Алгоритм построения решений}
+Множество достижимости будем строить по следующему алгоритму:
+\begin{enumerate}
+	\item Решаем систему $(S_{+})$ (первые её два уравнения) от $t = 0$ с начальными условиями $x_1(0) \hm = x_2(0) = 0$ до первого момента $x_2(\tau) = 0$ или до $t = T$ (тогда принимаем $\tau = T$).
+	\item Разбиваем равномерно отрезок $[0, \tau]$ и для каждой точки сетки $t^*$ интегрируем систему $(S_{-})$ с начальными условиями $[x_1(t^*)$, $x_2(t^*)$, $1$, $0]$ пока $t < T$, до $\psi_2(t^{**}) = 0$.
+	\item Решаем $(S_{+})$ с начальными $[x_1(t^{**}), x_2(t^{**}), -1, 0]$ до следующего обнуления $\psi_2$.
+	\item Далее после каждого чётного переключения интегрируем $(S_{+})$, а после нечётного $(S_{-})$ аналогично пунктам 2 и 3, пока не достигнем рассматриваемой временной границы $T$.
+	 \item Тоже самое (пункты 1-4) проделать для старта с $(S_{-})$.
+	 \item Строим $\Gamma[T]$~--- множество концов траекторий в момент времени $T$.
+	 \item Преобразуем $\Gamma[T]$ в $\partial W[T]$ посредством удаления пересекающихся отрезков. 
+	 
+	 Для этого будем поочередно фиксировать отрезки из $\Gamma[T]$, строить уравнение прямой $l_{curr}$, содержащей текущий отрезок, и определять какие из оставшихся сегментов имеют точки, лежащие по разные стороны от $l_{curr}$. Каждый из таких отрезков аналогично задает прямую $l$. Затем необходимо определить точку пересечения $l_{curr}$ и $l$, если окажется, что она принадлежит обоим сегментам, то придется удалить все точки границы, лежащие между рассматриваемыми и добавить точку пересечения, в противном случае нужно перейти к следующей паре отрезков.
+\end{enumerate}
+
+
+
+
+\subsection{Результаты работы программы}
+\subsubsection{Пример 1}
+Возьмём $\alpha = 1$. При таком параметре численно найдем значения неподвижных точек. Построим для наглядности слева от прямой $x = 0$ график функции $f(x) \hm = x \cos(x^2) - \alpha$, его пересечения с осью абсцисс соответствуют неподвижным точкам системы $(S_{+})$. А справа от прямой $x = 0$ изобразим функцию $g(x) = x \cos(x^2) + \alpha$, её обнуления совпадают с особыми точками $(S_{-})$.
+
+\begin{figure}[H]
+	\centering{\includegraphics[height=10cm]{P1}}
+	\caption{Поиск стационарных точек}
+\end{figure}
+Чтобы определить характер устойчивости точек, нам понадобится матрица Якоби системы \eqref{eq2}. Примем $f_1(x_1, x_2) = x_2$, а $f_2(x_1, x_2) = -x_1\cos\left(x_1^2\right) - 2x_1x_2 + \alpha$. Тогда 
+$$
+\mathcal{J}(x_1, x_2) = 
+\begin{pmatrix}
+	\dfrac{\partial{f}_1}{\partial{x_1}} & \dfrac{\partial{f}_1}{\partial{x_2}} \\[0.75em]
+	\dfrac{\partial{f}_2}{\partial{x_1}} & \dfrac{\partial{f}_2}{\partial{x_2}}
+\end{pmatrix} =
+\begin{pmatrix}
+	0 & 1 \\[0.75em]
+	2x_1^2\sin(x_1^2) - \cos(x_1^2) -2x_2 & -2x_1
+\end{pmatrix}.
+$$
+
+Характеристический многочлен $\chi_{J}(\lambda)$ равен
+$$\chi_{J}(\lambda) = \lambda^2 + 2x_1\lambda + (2x_2 + \cos(x_1^2) - 2x_1^2\sin(x_1^2)).$$
+
+Воспользуемся тем, что наши стационарные точки располагаются на прямой $x_2 = 0$, в результате получим 
+$$\chi_{J}(\lambda) = \lambda^2 + 2x_1\lambda + (\cos(x_1^2) - 2x_1^2\sin(x_1^2)).$$
+
+Исследуем корни характеристического многочлена в особых точках. Возьмём $x_{+}^{(1)} \hm = -1.514$, в таком случае
+$$ \chi_{J}(\lambda) = \lambda^2 - 3.028 \lambda - 4.103 \Rightarrow \{ D = (-3.028)^2 + 4 \cdot 4.103 = 25.581 \} \Rightarrow \lambda_{1, 2} = \dfrac{3.028 \pm \sqrt{25.581}}{2}, $$
+откуда $\lambda_1 = 4.043$, $\lambda_2 = -1.015$. 
+
+Значит рассматриваемая точка имеет седловой тип, который является неустойчивым. Отметим также, что сумма корней многочлена равна $-2x_1 > 0$ при $x_1 < 0$, следовательно $x_{+}^{(k)}$ может быть лишь неустойчивой. 
+
+Проанализируем первую относительно нуля стационарную точку системы $(S_{-})$, $x_{-}^{(1)} \hm = 1.514$:
+$$ \chi_{J}(\lambda) = \lambda^2 + 3.028 \lambda - 4.103 \Rightarrow \{ D = (3.028)^2 + 4 \cdot 4.103 = 25.581 \} \Rightarrow \lambda_{1, 2} = \dfrac{-3.028 \pm \sqrt{25.581}}{2}, $$
+откуда $\lambda_1 = 1.015$, $\lambda_2 = -4.043$, то есть $x_{-}^{(1)}$~--- седло (всегда неустойчива). 
+
+На всех графиках, приведённых ниже, синим цветом выделена граница множества достижимости, красным изображается кривая переключений, зелёным отмечаются особые точки для $(S_{+})$, чёрным~--- для $(S_{-})$.
+
+\begin{figure}[H]
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P2}
+	\caption{$t = 1.2$}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P3}
+	\caption{$t = 1.6$}
+\end{minipage}
+\end{figure}	
+
+\begin{figure}[H]
+	\centering{\includegraphics[height=6cm]{P4}}
+	\caption{$t = 1.8$}
+\end{figure}
+
+\begin{figure}[H]
+	\centering{\includegraphics[height=9cm]{P5}}
+	\caption{$t = 2$}
+\end{figure}
+С увеличением времени $t$ множество достижимости отдаляется от положений равновесия и стремится к бесконечности, причём довольно-таки быстро (за 0.2 секунды убывает более чем на 100, см. рис. 6-7). Тем самым графики подтверждают неустойчивость рассмотренных выше точек. 
+
+Для полноты понимания происходящего покажем, что $x_{+}^{(1)}$ действительно является седлом: выведем на график и сами траектории при $t = 2$ (зелёным цветом изображены траектории, соответствующие $u = -\alpha$, чёрным соответствующие $u = \alpha$).
+\begin{figure}[H]
+	\centering{\includegraphics[height=9cm]{P6}}
+	\caption{Траектории системы при $t = 2$ возле $x_{+}^{(1)}$}
+\end{figure}
+
+\subsubsection{Пример 2}
+Посмотрим как ведет себя множество достижимости при фиксированном $t = 1$, для различных параметров $\alpha$. 
+
+Ниже проиллюстрируем (рис. 9-13) характер изменения множества достижимости при прохождении $ \alpha$ через значения из $\{0.75, 1.5, 2.25, 3\}$.
+\begin{figure}[H]
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P7}
+	\caption{$\alpha = 0.75$}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P8}
+	\caption{$\alpha = 1.5$}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P9}
+	\caption{$\alpha = 2.25$}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P10}
+	\caption{$\alpha = 3$}
+\end{minipage}
+\end{figure}
+
+Представленные рисунки 9-12 свидетельствуют нам о том, что при увеличении значения $\alpha$ множество достижимости также растёт, причём каждое следующее множество содержит предыдущее (см. рис. 13).
+\begin{figure}[H]
+	\centering{\includegraphics[height=6cm]{P11}}
+	\caption{Изменение множества достижимости при фиксированном времени}
+\end{figure}
+
+\subsubsection{Пример 3}
+При фиксированном $\alpha = 0.2$ продемонстрируем как меняется кривая переключений. 
+
+Ниже (рис. 14-16) приведены графики границы множества достижимости и кривой переключения для $t = 3$, $t = 4$, $t = 5$.
+
+\begin{figure}[H]
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P13}
+	\caption{$ t = 3$}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{P14}
+	\caption{$t = 4$}
+\end{minipage}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering{\includegraphics[height=5.92cm]{P15}}
+	\caption{$t = 5$}
+\end{figure}
+
+
+\newpage
+\begin{thebibliography}{99}
+\item Понтрягин~Л.~С., Болтянский~В.~Г., Гамкрелидзе~Р.~В., Мищенко~Е.~Ф. Математическая теория оптимальных процессов. М.: Физматлит, 1961.
+\item Чистяков~И.~А. Лекции по оптимальному управлению. 2022-2023.
+
+
+\end{thebibliography}
+
+\end{document}
